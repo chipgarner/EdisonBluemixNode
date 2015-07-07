@@ -29,14 +29,13 @@ CLIENTID += ':' + MAC;
 console.log(URL);
 console.log(CLIENTID);
 
-var TOPIC = 'iot-2/evt/' + TYPE;
-TOPIC += '/fmt/json';
-console.log(TOPIC);
-
 var AUTHMETHOD = 'token';
 var AUTHTOKEN = '*QwMxi!O8DLlTFOv(Y';
 
 var client  = mqtt.connect(URL, { clientId: CLIENTID }, {username: AUTHMETHOD }, { password: AUTHTOKEN });
+
+var TOPIC = 'iot-2/evt/status/fmt/json';
+console.log(TOPIC);
 
 client.on('connect', function () {
   // Uncomment for local testing:
