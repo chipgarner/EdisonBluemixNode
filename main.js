@@ -2,8 +2,9 @@
 /*jshint unused:true */
 
 /*
-Node.js application for connecting the Intel Edison Arduino to IBM Bluemix.
-Sends data from an analog sensor on analog pin zero.
+Node.js application for connecting the Intel Edison Arduino to IBM Bluemix
+using Quickstart.
+Sends data from an analog sensor on analog pin zero (A0).
 */
 
 //Uses mqtt.js, see package.json. More info at: 
@@ -11,13 +12,13 @@ Sends data from an analog sensor on analog pin zero.
 var mqtt    = require('mqtt');
 
 var PROTOCOL = 'mqtt';
-var BROKER = 'quickstart.messaging.internetofthings.ibmcloud.com';// 'localhost' for local testing
+var BROKER = 'quickstart.messaging.internetofthings.ibmcloud.com';
 var PORT = 1883;
 
 //Create the url string
 var URL = PROTOCOL + '://' + BROKER;
 URL += ':' + PORT; 
-//URL is e.g. 'mqtt://quickstart.messaging.internetofthings.ibmcloud.com:1883'
+//URL is 'mqtt://quickstart.messaging.internetofthings.ibmcloud.com:1883'
 
 var MAC = '784b87a801e9';
 var CLIENTID= 'd:quickstart:iotquick-edison:' + MAC;
@@ -26,18 +27,10 @@ var TOPIC = 'iot-2/evt/status/fmt/json';
 var client  = mqtt.connect(URL, { clientId: CLIENTID });
 
 client.on('connect', function () {
-  // Uncomment for local testing:
-  //client.subscribe(TOPIC);
-    
   setInterval(function(){
     client.publish(TOPIC, '{"d":{"Volts":' + analogVolts() + '}}');//Payload is JSON
   }, 2000);//Keeps publishing every 2000 milliseconds.
 });
-
-//Un-comment for local testing
-//client.on('message', function (topic, message) {
-//  console.log(message.toString());
-//});
 
 //Connect to an analog sensor on Edison Arduino pin A0.
 //Uses mraa included with Edison image.  More info at: 
