@@ -26,23 +26,31 @@ var analogValue = analogPin0.read(); //read the value of the analog pin
 console.log(analogValue); //write the value of the analog pin to the console
 
 var mqtt    = require('mqtt');
+
+//quickstart.messaging.internetofthings.ibmcloud.com
 var client  = mqtt.connect('mqtt://quickstart.messaging.internetofthings.ibmcloud.com:1883', { clientId: 'd:quickstart:iotquick-edison:784b87a801e9' });
 
 client.on('connect', function () {
- // client.subscribe('presence');
-    var index = 0;
-    while (index < 10)
-    {
+    //client.subscribe('iot-2/evt/status/fmt/json');
+   // var index = 0;
+   // while (index < 10)
+    //{
         setInterval(function(){
-        client.publish('iot-2/evt/status/fmt/json', '{"d":{"Volts":1.3}}');
-        index ++;
+        client.publish('iot-2/evt/status/fmt/json', '{"d":{"Volts":' + analogVolts() + '}}');
+        //index ++;
         }, 2000);
         
-    }
+   // }
 });
 
 client.on('message', function (topic, message) {
   // message is Buffer
   console.log(message.toString());
-  client.end();
+  //client.end();
 });
+
+var analogVolts = function() {
+    var counts = analogPin0.read();
+    var volts = counts * 4.95 / 1023;
+    return parseFloat(volts).toFixed(4);
+};
