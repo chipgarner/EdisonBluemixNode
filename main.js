@@ -11,19 +11,32 @@ Sends data from an analog sensor on analog pin zero.
 var mqtt    = require('mqtt');
 
 var PROTOCOL = 'mqtt';
-var BROKER = 'quickstart.messaging.internetofthings.ibmcloud.com';// 'localhost' for local testing
+var ORG = 'xrxila';
+var BROKER = ORG + '.messaging.internetofthings.ibmcloud.com';// 'localhost' for local testing
 var PORT = 1883;
 
 //Create the url string
 var URL = PROTOCOL + '://' + BROKER;
 URL += ':' + PORT; 
-//URL is e.g. 'mqtt://quickstart.messaging.internetofthings.ibmcloud.com:1883'
+//URL is e.g. 'mqtt://xrxlila.messaging.internetofthings.ibmcloud.com:1883'
 
 var MAC = '784b87a801e9';
-var CLIENTID= 'd:quickstart:iotquick-edison:' + MAC;
-var TOPIC = 'iot-2/evt/status/fmt/json';
+var TYPE = 'edison-air';
+var CLIENTID= 'd:' + ORG;
+CLIENTID += ':' + TYPE;
+CLIENTID += ':' + MAC;
+//d:xrxila:edison-air:784b87a801e9
+console.log(URL);
+console.log(CLIENTID);
 
-var client  = mqtt.connect(URL, { clientId: CLIENTID });
+var TOPIC = 'iot-2/evt/' + TYPE;
+TOPIC += '/fmt/json';
+console.log(TOPIC);
+
+var AUTHMETHOD = 'token';
+var AUTHTOKEN = '*QwMxi!O8DLlTFOv(Y';
+
+var client  = mqtt.connect(URL, { clientId: CLIENTID }, {username: AUTHMETHOD }, { password: AUTHTOKEN });
 
 client.on('connect', function () {
   // Uncomment for local testing:
