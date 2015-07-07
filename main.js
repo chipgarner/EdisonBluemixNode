@@ -2,55 +2,48 @@
 /*jshint unused:true */
 
 /*
-A simple node.js application intended to read data from Analog pins on the Intel based development boards such as the Intel(R) Galileo and Edison with Arduino breakout board.
+Node.js application for connecting the Intel Edison Arduino to IBM Bluemix.
 
-MRAA - Low Level Skeleton Library for Communication on GNU/Linux platforms
-Library in C/C++ to interface with Galileo & other Intel platforms, in a structured and sane API with port nanmes/numbering that match boards & with bindings to javascript & python.
-
-Steps for installing MRAA & UPM Library on Intel IoT Platform with IoTDevKit Linux* image
-Using a ssh client: 
-1. echo "src maa-upm http://iotdk.intel.com/repos/1.1/intelgalactic" > /etc/opkg/intel-iotdk.conf
-2. opkg update
-3. opkg upgrade
-
-Article: https://software.intel.com/en-us/html5/articles/intel-xdk-iot-edition-nodejs-templates
+Sends data from an analog sensor on analog pin zero.
 */
 
-
-
-var mraa = require('mraa'); //require mraa
-console.log('MRAA Version: ' + mraa.getVersion()); //write the mraa version to the console
-
-var analogPin0 = new mraa.Aio(0); //setup access analog input Analog pin #0 (A0)
-var analogValue = analogPin0.read(); //read the value of the analog pin
-console.log(analogValue); //write the value of the analog pin to the console
-
+//Uses mqtt.js, see package.json. More info at: https://www.npmjs.com/package/mqtt
 var mqtt    = require('mqtt');
 
-//quickstart.messaging.internetofthings.ibmcloud.com
-var client  = mqtt.connect('mqtt://quickstart.messaging.internetofthings.ibmcloud.com:1883', { clientId: 'd:quickstart:iotquick-edison:784b87a801e9' });
+var protocol = 'mqtt';
+var broker = 'quickstart.messaging.internetofthings.ibmcloud.com';// 'localhost' for local testing
+var port = 1883;
+
+var url = protocol + '://' + broker;
+url += ':' + port; //url is e.g. 'mqtt://quickstart.messaging.internetofthings.ibmcloud.com:1883'
+
+var mac = '784b87a801e9';
+var clientid = 'd:quickstart:iotquick-edison:' + mac;
+var topic = 'iot-2/evt/status/fmt/json';
+
+var client  = mqtt.connect(url, { clientId: clientid });
 
 client.on('connect', function () {
-    //client.subscribe('iot-2/evt/status/fmt/json');
-   // var index = 0;
-   // while (index < 10)
-    //{
-        setInterval(function(){
-        client.publish('iot-2/evt/status/fmt/json', '{"d":{"Volts":' + analogVolts() + '}}');
-        //index ++;
-        }, 2000);
-        
-   // }
+    // Uncomment for local testing:
+    //client.subscribe(topic);
+    
+    setInterval(function(){
+        client.publish(topic, '{"d":{"Volts":' + analogVolts() + '}}');
+    }, 2000);//Keeps publishing every 2000 milliseconds.
 });
 
-client.on('message', function (topic, message) {
-  // message is Buffer
-  console.log(message.toString());
-  //client.end();
-});
+//Un-comment for local testing
+//client.on('message', function (topic, message) {
+//  console.log(message.toString());
+//});
 
+//Connect to an analog sensor on pin 0.
+//Uses mraa included with Edison image
+var mraa = require('mraa'); 
+console.log('MRAA Version: ' + mraa.getVersion());
+var pin0 = new mraa.Aio(0);
 var analogVolts = function() {
-    var counts = analogPin0.read();
+    var counts = pin0.read();
     var volts = counts * 4.95 / 1023;
     return parseFloat(volts).toFixed(4);
 };
