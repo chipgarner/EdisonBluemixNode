@@ -7,6 +7,9 @@ using Quickstart.
 Sends data from an analog sensor on analog pin zero (A0).
 */
 
+//Change the following to your Edison's MAC address
+var MAC = '784b87a801ee';
+
 //Uses mqtt.js, see package.json. More info at: 
 //https://www.npmjs.com/package/mqtt
 var mqtt    = require('mqtt');
@@ -20,7 +23,6 @@ var URL = PROTOCOL + '://' + BROKER;
 URL += ':' + PORT; 
 //URL is 'mqtt://quickstart.messaging.internetofthings.ibmcloud.com:1883'
 
-var MAC = '784b87a801e9';
 var CLIENTID= 'd:quickstart:iotquick-edison:' + MAC;
 var TOPIC = 'iot-2/evt/status/fmt/json';
 
