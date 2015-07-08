@@ -13,7 +13,7 @@ AUTHTOKEN
 
 var ORG = 'xrxila';
 var TYPE = 'edison-air';
-var ID = '784b87a801e9';
+var ID = '784b87a801ee';
 var AUTHTOKEN = '*QwMxi!O8DLlTFOv(Y';
 
 //Uses mqtt.js, see package.json. More info at: 
