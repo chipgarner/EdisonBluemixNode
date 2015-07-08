@@ -4,15 +4,24 @@
 /*
 Node.js application for connecting the Intel Edison Arduino to IBM Bluemix.
 Sends data from an analog sensor on analog pin zero.
+Requires registration on Bluemix. Edit the following to your Bluemix registration values:
+ORG
+TYPE
+ID
+AUTHTOKEN
 */
+
+var ORG = 'xrxila';
+var TYPE = 'edison-air';
+var ID = '784b87a801e9';
+var AUTHTOKEN = '*QwMxi!O8DLlTFOv(Y';
 
 //Uses mqtt.js, see package.json. More info at: 
 //https://www.npmjs.com/package/mqtt
 var mqtt    = require('mqtt');
 
 var PROTOCOL = 'mqtt';
-var ORG = 'xrxila';
-var BROKER = ORG + '.messaging.internetofthings.ibmcloud.com';// 'localhost' for local testing
+var BROKER = ORG + '.messaging.internetofthings.ibmcloud.com';
 var PORT = 1883;
 
 //Create the url string
@@ -20,36 +29,23 @@ var URL = PROTOCOL + '://' + BROKER;
 URL += ':' + PORT; 
 //URL is e.g. 'mqtt://xrxlila.messaging.internetofthings.ibmcloud.com:1883'
 
-var MAC = '784b87a801e9';
-var TYPE = 'edison-air';
 var CLIENTID= 'd:' + ORG;
 CLIENTID += ':' + TYPE;
-CLIENTID += ':' + MAC;
-//d:xrxila:edison-air:784b87a801e9
-console.log(URL);
-console.log(CLIENTID);
+CLIENTID += ':' + ID;
+//CLIENTID -s e.g. d:xrxila:edison-air:784b87a801e9
 
-var AUTHMETHOD = 'token';
-var AUTHTOKEN = '*QwMxi!O8DLlTFOv(Y';
+var AUTHMETHOD = 'use-token-auth';
 
-var client  = mqtt.connect(URL, { clientId: CLIENTID }, {username: AUTHMETHOD }, { password: AUTHTOKEN });
+var client  = mqtt.connect(URL, { clientId: CLIENTID, username: AUTHMETHOD, password: AUTHTOKEN });
 
 var TOPIC = 'iot-2/evt/status/fmt/json';
 console.log(TOPIC);
 
 client.on('connect', function () {
-  // Uncomment for local testing:
-  //client.subscribe(TOPIC);
-    
   setInterval(function(){
     client.publish(TOPIC, '{"d":{"Volts":' + analogVolts() + '}}');//Payload is JSON
   }, 2000);//Keeps publishing every 2000 milliseconds.
 });
-
-//Un-comment for local testing
-//client.on('message', function (topic, message) {
-//  console.log(message.toString());
-//});
 
 //Connect to an analog sensor on Edison Arduino pin A0.
 //Uses mraa included with Edison image.  More info at: 

@@ -2,6 +2,12 @@ Edison Bluemix App
 ============================
 Node.js application intended to read data from Analog pin A0 on the Intel(R) Edison with Arduino breakout board and send it to IBM Bluemix.
 
+Requires registration on Bluemix. Edit the following to your Bluemix registration values:
+ORG
+TYPE
+ID
+AUTHTOKEN
+
 Intel(R) XDK 
 -------------------------------------------
 This app uses the Intel(R) XDK IoT Edition. 
