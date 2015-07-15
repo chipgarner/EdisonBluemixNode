@@ -11,10 +11,10 @@ ID
 AUTHTOKEN
 */
 
-var ORG = 'xrxila';
+var ORG = '8h1u1j';
 var TYPE = 'edison-air';
-var ID = '784b87a801ee';
-var AUTHTOKEN = '*QwMxi!O8DLlTFOv(Y';
+var ID = '784b87a801e9';
+var AUTHTOKEN = '_BrtUr1E?vy3vq*tEL';
 
 //Uses mqtt.js, see package.json. More info at: 
 //https://www.npmjs.com/package/mqtt
