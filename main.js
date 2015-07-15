@@ -11,17 +11,53 @@ ID
 AUTHTOKEN
 */
 
-var ORG = '8h1u1j';
-var TYPE = 'edison-air';
-var ID = '784b87a801e9';
-var AUTHTOKEN = '_BrtUr1E?vy3vq*tEL';
+var org = 'comxyz';
+var type = 'edison-dohickey';
+var id = '123456789101';
+var authtoken = 'ThisIsSecret';
+
+var configFile = './device.cfg';
+var properties = require('properties');
+properties.parse(configFile, { path: true }, function (err, config){
+  if (err) return console.error (err);
+// If device.cfg was loaded successfully update the configuration
+
+    if(!config.org){
+        throw "Configuration should include an org field that specifies your organization.";
+    }
+
+    if(!config.type){
+        throw "Configuration should include a type field that specifies your device type.";
+    }
+
+    if(!config.id){
+        throw "Configuration should include an id field that specifies your device id.";
+    }
+    if(!config["auth-token"]){
+      throw "Configuration should include an authorization token.";
+    }
+
+    console.log("Configuration loaded successfully, connecting your device to the registered service.");
+
+    org = config.org;
+    type = config.type;
+    id = config.id;
+    authtoken = config['auth-token'];
+      
+    console.log(org);
+    console.log(type);
+    console.log(id);
+    console.log(authtoekn);
+
+});
+
 
 //Uses mqtt.js, see package.json. More info at: 
 //https://www.npmjs.com/package/mqtt
 var mqtt    = require('mqtt');
 
 var PROTOCOL = 'mqtt';
-var BROKER = ORG + '.messaging.internetofthings.ibmcloud.com';
+var BROKER = org + '.messaging.internetofthings.ibmcloud.com';
 var PORT = 1883;
 
 //Create the url string
@@ -29,14 +65,14 @@ var URL = PROTOCOL + '://' + BROKER;
 URL += ':' + PORT; 
 //URL is e.g. 'mqtt://xrxlila.messaging.internetofthings.ibmcloud.com:1883'
 
-var CLIENTID= 'd:' + ORG;
-CLIENTID += ':' + TYPE;
-CLIENTID += ':' + ID;
-//CLIENTID -s e.g. d:xrxila:edison-air:784b87a801e9
+var CLIENTID= 'd:' + org;
+CLIENTID += ':' + type;
+CLIENTID += ':' + id;
+//CLIENTID -s e.g. d:xrxila:edison-air:784b87a81234
 
-var AUTHMETHOD = 'use-token-auth';
+var AUTHMETHOD = 'use-token-auth';//As of July 15 2015 this is the only one that works on Bluemix
 
-var client  = mqtt.connect(URL, { clientId: CLIENTID, username: AUTHMETHOD, password: AUTHTOKEN });
+var client  = mqtt.connect(URL, { clientId: CLIENTID, username: AUTHMETHOD, password: authtoken });
 
 var TOPIC = 'iot-2/evt/status/fmt/json';
 console.log(TOPIC);
