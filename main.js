@@ -11,16 +11,22 @@ ID
 AUTHTOKEN
 */
 
+//Uses mqtt.js, see package.json. More info at: 
+//https://www.npmjs.com/package/mqtt
+var mqtt    = require('mqtt');
+var client;
+
 var org = 'comxyz';
 var type = 'edison-dohickey';
 var id = '123456789101';
 var authtoken = 'ThisIsSecret';
 
-var configFile = './device.cfg';
+var configFile = '/node_app_slot/device.cfg';
+console.log(configFile);
 var properties = require('properties');
+//Asynchronous call makes no sense for a configuration file.
 properties.parse(configFile, { path: true }, function (err, config){
   if (err) return console.error (err);
-// If device.cfg was loaded successfully update the configuration
 
     if(!config.org){
         throw "Configuration should include an org field that specifies your organization.";
@@ -37,51 +43,43 @@ properties.parse(configFile, { path: true }, function (err, config){
       throw "Configuration should include an authorization token.";
     }
 
-    console.log("Configuration loaded successfully, connecting your device to the registered service.");
-
     org = config.org;
     type = config.type;
     id = config.id;
     authtoken = config['auth-token'];
-      
-    console.log(org);
-    console.log(type);
-    console.log(id);
-    console.log(authtoekn);
+    
+    mqttConnect();
 
 });
 
+var mqttConnect = function() {
+    var PROTOCOL = 'mqtt';
+    var BROKER = org + '.messaging.internetofthings.ibmcloud.com';
+    var PORT = 1883;
 
-//Uses mqtt.js, see package.json. More info at: 
-//https://www.npmjs.com/package/mqtt
-var mqtt    = require('mqtt');
+    //Create the url string
+    var URL = PROTOCOL + '://' + BROKER;
+    URL += ':' + PORT; 
+    //URL is e.g. 'mqtt://xrxlila.messaging.internetofthings.ibmcloud.com:1883'
 
-var PROTOCOL = 'mqtt';
-var BROKER = org + '.messaging.internetofthings.ibmcloud.com';
-var PORT = 1883;
+    var CLIENTID= 'd:' + org;
+    CLIENTID += ':' + type;
+    CLIENTID += ':' + id;
+    //CLIENTID -s e.g. d:xrxila:edison-air:784b87a81234
 
-//Create the url string
-var URL = PROTOCOL + '://' + BROKER;
-URL += ':' + PORT; 
-//URL is e.g. 'mqtt://xrxlila.messaging.internetofthings.ibmcloud.com:1883'
+    var AUTHMETHOD = 'use-token-auth';//As of July 15 2015 this is the only one that works on Bluemix
 
-var CLIENTID= 'd:' + org;
-CLIENTID += ':' + type;
-CLIENTID += ':' + id;
-//CLIENTID -s e.g. d:xrxila:edison-air:784b87a81234
+    client  = mqtt.connect(URL, { clientId: CLIENTID, username: AUTHMETHOD, password: authtoken });
 
-var AUTHMETHOD = 'use-token-auth';//As of July 15 2015 this is the only one that works on Bluemix
+    var TOPIC = 'iot-2/evt/status/fmt/json';
 
-var client  = mqtt.connect(URL, { clientId: CLIENTID, username: AUTHMETHOD, password: authtoken });
+    client.on('connect', function () {
+      setInterval(function(){
+        client.publish(TOPIC, '{"d":{"Volts":' + analogVolts() + '}}');//Payload is JSON
+      }, 2000);//Keeps publishing every 2000 milliseconds.
+    });
 
-var TOPIC = 'iot-2/evt/status/fmt/json';
-console.log(TOPIC);
-
-client.on('connect', function () {
-  setInterval(function(){
-    client.publish(TOPIC, '{"d":{"Volts":' + analogVolts() + '}}');//Payload is JSON
-  }, 2000);//Keeps publishing every 2000 milliseconds.
-});
+}
 
 //Connect to an analog sensor on Edison Arduino pin A0.
 //Uses mraa included with Edison image.  More info at: 
