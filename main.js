@@ -17,12 +17,11 @@ var mqtt    = require('mqtt');
 var client;
 
 var org = 'comxyz';
-var type = 'edison-dohickey';
+var type = 'edison-dohickey';+
 var id = '123456789101';
 var authtoken = 'ThisIsSecret';
 
 var configFile = '/node_app_slot/device.cfg';
-console.log(configFile);
 var properties = require('properties');
 //Asynchronous call makes no sense for a configuration file.
 properties.parse(configFile, { path: true }, function (err, config){
