@@ -10,21 +10,16 @@ var loadConfig = require('../source/loadConfig.js');
 describe('LoadConfig', function(){
   describe('#configuration()', function(){ 
       
-    it('should load without error', function(done){          
-      loadConfig.configuration('testdevice.tst', function(results){
-        done();
-      });
-    });
-      
     it('should load correct results', function(done){          
       loadConfig.configuration('testdevice.tst', function(results){
-        expect(results).to.have.a.property('org', 'blerg');
-        expect(results).to.have.a.property('type', 'verynice-type');
-        expect(results).to.have.a.property('id', '79c4b87a80f3a');
-        expect(results).to.have.a.property('auth-token', 'whatever');
+        expect(results).to.have.a.property('url', 'mqtt://blerg.messaging.internetofthings.ibmcloud.com:1883');
+        expect(results.requireds).to.have.a.property('clientId', 'd:blerg:verynice-type:79c4b87a80f3a');
+        expect(results.requireds).to.have.a.property('username', 'use-token-auth');
+        expect(results.requireds).to.have.a.property('password', 'whatever');
         done();
       });
     });
       
   });
 });
+
